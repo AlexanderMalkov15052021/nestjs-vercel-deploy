@@ -19,29 +19,29 @@ async function bootstrap() {
   const config = app.get(ConfigService)
   const redis = await createClient({ url: process.env.REDIS_URL }).connect();
 
-  app.use(
-    (session as any)({  // ругается vercel без as any
-      secret: config.getOrThrow<string>('SESSION_SECRET'),
-      name: config.getOrThrow<string>('SESSION_NAME'),
-      resave: true,
-      saveUninitialized: false,
-      cookie: {
-        domain: config.getOrThrow<string>('SESSION_DOMAIN'),
-        maxAge: ms(config.getOrThrow<StringValue>('SESSION_MAX_AGE')),
-        httpOnly: parseBoolean(
-          config.getOrThrow<string>('SESSION_HTTP_ONLY')
-        ),
-        secure: parseBoolean(
-          config.getOrThrow<string>('SESSION_SECURE')
-        ),
-        sameSite: 'lax'
-      },
-      store: new RedisStore({
-        client: redis,
-        prefix: config.getOrThrow<string>('SESSION_FOLDER')
-      })
-    })
-  )
+  // app.use(
+  //   (session as any)({  // ругается vercel без as any
+  //     secret: config.getOrThrow<string>('SESSION_SECRET'),
+  //     name: config.getOrThrow<string>('SESSION_NAME'),
+  //     resave: true,
+  //     saveUninitialized: false,
+  //     cookie: {
+  //       domain: config.getOrThrow<string>('SESSION_DOMAIN'),
+  //       maxAge: ms(config.getOrThrow<StringValue>('SESSION_MAX_AGE')),
+  //       httpOnly: parseBoolean(
+  //         config.getOrThrow<string>('SESSION_HTTP_ONLY')
+  //       ),
+  //       secure: parseBoolean(
+  //         config.getOrThrow<string>('SESSION_SECURE')
+  //       ),
+  //       sameSite: 'lax'
+  //     },
+  //     store: new RedisStore({
+  //       client: redis,
+  //       prefix: config.getOrThrow<string>('SESSION_FOLDER')
+  //     })
+  //   })
+  // )
 
   await app.listen(process.env.APPLICATION_PORT ?? 3000);
 }
