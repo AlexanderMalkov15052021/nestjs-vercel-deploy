@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import IORedis from 'ioredis'
-import * as cookieParser from 'cookie-parser'
+import cookieParser from 'cookie-parser'
 
 import * as dotenv from 'dotenv';
 
@@ -12,7 +12,7 @@ async function bootstrap() {
 
   const redis = new IORedis(process.env.REDIS_URL);
 
-  // app.use((cookieParser as any)(process.env.COOKIES_SECRET));
+  app.use((cookieParser as any)(process.env.COOKIES_SECRET));
 
   await app.listen(process.env.APPLICATION_PORT ?? 3000);
 }
