@@ -1,37 +1,123 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common'
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common'
+import { hash } from 'argon2'
+
+// import { PrismaService } from '@/prisma/prisma.service'
+
+import { UpdateUserDto } from './dto/update-user.dto'
 import { pool } from '../db/pool.module';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { verify } from 'argon2'
 
 /**
  * Сервис для работы с пользователями.
  */
 @Injectable()
 export class UserService {
+	/**
+	 * Конструктор сервиса пользователей.
+	 * @param prismaService - Сервис для работы с базой данных Prisma.
+	 */
+	// public constructor(private readonly prismaService: PrismaService) { }
 
-    /**
-     * Создает нового пользователя.
-     * @param name - Имя пользователя.
-     * @param surname - Фамилия пользователя.
-     * @returns Созданный пользователь.
-     */
-    public async create(
-        req: Request, dto: UpdateUserDto
-    ) {
+	/**
+	 * Находит пользователя по ID.
+	 * @param {string} id - ID пользователя.
+	 * @returns {Promise<User>} Найденный пользователь.
+	 * @throws {NotFoundException} Если пользователь не найден.
+	 */
+	public async findById(id: string) {
+		// const user = await this.prismaService.user.findUnique({
+		// 	where: {
+		// 		id
+		// 	},
+		// 	include: {
+		// 		accounts: true
+		// 	}
+		// })
 
-        // const isValidPassword = await verify(dto.name, dto.surname);
+		// if (!user) {
+		// 	throw new NotFoundException(
+		// 		'Пользователь не найден. Пожалуйста, проверьте введенные данные.'
+		// 	)
+		// }
 
-        // if (!isValidPassword) {
-        //     throw new UnauthorizedException(
-        //         'Неверный пароль. Пожалуйста, попробуйте еще раз или восстановите пароль, если забыли его.'
-        //     )
-        // }
+		return `user`
+	}
 
-        const nwePerson = await pool.query(
-            `INSERT INTO person (name, surname) values ($1, $2) RETURNING *`,
-            [dto.name, dto.surname]
-        )
+	/**
+	 * Находит пользователя по email.
+	 * @param {string} email - Email пользователя.
+	 * @returns {Promise<User | null>} Найденный пользователь или null, если не найден.
+	 */
+	public async findByEmail(email: string) {
+		// const user = await this.prismaService.user.findUnique({
+		// 	where: {
+		// 		email
+		// 	},
+		// 	include: {
+		// 		accounts: true
+		// 	}
+		// })
 
-        return nwePerson
-    }
+		const userReq = await pool.query(`SELECT * FROM users WHERE email = $1`, [email]);
+
+		return userReq.rows[0];
+	}
+
+	/**
+	 * Создает нового пользователя.
+	 * @param email - Email пользователя.
+	 * @param password - Пароль пользователя.
+	 * @param displayName - Отображаемое имя пользователя.
+	 * @param picture - URL аватара пользователя.
+	 * @param method - Метод аутентификации пользователя.
+	 * @param isVerified - Флаг, указывающий, подтвержден ли email пользователя.
+	 * @returns Созданный пользователь.
+	 */
+	public async create(
+		email: string,
+		password: string,
+		displayName: string,
+		picture: string,
+		method: "",
+		// method: AuthMethod,
+		isVerified: boolean
+	) {
+		// const user = await this.prismaService.user.create({
+		// 	data: {
+		// 		email,
+		// 		password: password ? await hash(password) : '',
+		// 		displayName,
+		// 		picture,
+		// 		method,
+		// 		isVerified
+		// 	},
+		// 	include: {
+		// 		accounts: true
+		// 	}
+		// })
+
+		return 1
+	}
+
+	/**
+	 * Обновляет данные пользователя.
+	 * @param userId - ID пользователя.
+	 * @param dto - Данные для обновления пользователя.
+	 * @returns Обновленный пользователь.
+	 */
+	public async update(userId: string, dto: UpdateUserDto) {
+		// const user = await this.findById(userId)
+
+		// const updatedUser = await this.prismaService.user.update({
+		// 	where: {
+		// 		id: user.id
+		// 	},
+		// 	data: {
+		// 		email: dto.email,
+		// 		displayName: dto.name,
+		// 		isTwoFactorEnabled: dto.isTwoFactorEnabled
+		// 	}
+		// })
+
+		return 1
+	}
 }
