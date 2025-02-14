@@ -12,6 +12,11 @@ async function bootstrap() {
 
   const redis = new IORedis(process.env.REDIS_URI);
 
+  await redis.set('key', 'value');
+  const value = await redis.get('key');
+
+  console.log(value);
+
   // app.use(cookieParser(process.env.COOKIES_SECRET));
 
   await app.listen(process.env.APPLICATION_PORT ?? 3000);
