@@ -16,7 +16,7 @@ dotenv.config();
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // const config = app.get(ConfigService)
+  const config = app.get(ConfigService)
   const redis = await createClient({ url: process.env.REDIS_URL }).connect();
 
   // app.use(
