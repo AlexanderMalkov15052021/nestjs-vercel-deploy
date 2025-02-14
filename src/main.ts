@@ -3,11 +3,11 @@ import { AppModule } from './app.module';
 
 import { createClient } from 'redis';
 
-// import * as session from 'express-session'
-// import { ConfigService } from '@nestjs/config'
-// import { ms, StringValue } from './libs/common/utils/ms.util'
-// import { parseBoolean } from './libs/common/utils/parse-boolean.util'
-// import { RedisStore } from 'connect-redis'
+import * as session from 'express-session'
+import { ConfigService } from '@nestjs/config'
+import { ms, StringValue } from './libs/common/utils/ms.util'
+import { parseBoolean } from './libs/common/utils/parse-boolean.util'
+import { RedisStore } from 'connect-redis'
 
 import * as dotenv from 'dotenv';
 
