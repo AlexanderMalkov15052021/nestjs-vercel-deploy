@@ -10,7 +10,7 @@ dotenv.config();
 export class AppService {
   async getHello(): Promise<string> {
 
-    const users = await pool.query(`SELECT * FROM person`)
+    const users = await pool.query(`SELECT * FROM users`)
 
     return JSON.stringify({ res: "test!", data: users.rows });
   }
