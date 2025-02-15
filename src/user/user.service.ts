@@ -1,8 +1,6 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common'
 import { hash } from 'argon2'
 
-// import { PrismaService } from '@/prisma/prisma.service'
-
 import { UpdateUserDto } from './dto/update-user.dto'
 import { pool } from '../db/pool.module';
 
@@ -11,18 +9,7 @@ import { pool } from '../db/pool.module';
  */
 @Injectable()
 export class UserService {
-	/**
-	 * Конструктор сервиса пользователей.
-	 * @param prismaService - Сервис для работы с базой данных Prisma.
-	 */
-	// public constructor(private readonly prismaService: PrismaService) { }
 
-	/**
-	 * Находит пользователя по ID.
-	 * @param {string} id - ID пользователя.
-	 * @returns {Promise<User>} Найденный пользователь.
-	 * @throws {NotFoundException} Если пользователь не найден.
-	 */
 	public async findById(id: string) {
 		// const user = await this.prismaService.user.findUnique({
 		// 	where: {
@@ -42,11 +29,6 @@ export class UserService {
 		return `user`
 	}
 
-	/**
-	 * Находит пользователя по email.
-	 * @param {string} email - Email пользователя.
-	 * @returns {Promise<User | null>} Найденный пользователь или null, если не найден.
-	 */
 	public async findByEmail(email: string) {
 		// const user = await this.prismaService.user.findUnique({
 		// 	where: {

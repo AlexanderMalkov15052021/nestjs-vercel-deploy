@@ -4,6 +4,7 @@ import {
 	NotFoundException
 } from '@nestjs/common'
 
+import { MailService } from '../../libs/mail/mail.service'
 
 /**
  * Сервис для управления двухфакторной аутентификацией.
@@ -16,7 +17,8 @@ export class TwoFactorAuthService {
 	 */
 	public constructor(
 		// private readonly prismaService: PrismaService,
-	) {}
+		private readonly mailService: MailService
+	) { }
 
 	/**
 	 * Проверяет токен двухфакторной аутентификации.

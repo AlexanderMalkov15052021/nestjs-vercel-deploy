@@ -6,6 +6,7 @@ import {
 	Validate
 } from 'class-validator'
 
+import { IsPasswordsMatchingConstraint } from '../../libs/common/decorators/is-passwords-matching-constraint.decorator'
 
 /**
  * DTO для регистрации пользователя.
@@ -48,6 +49,8 @@ export class RegisterDto {
 	@MinLength(6, {
 		message: 'Пароль подтверждения должен содержать не менее 6 символов.'
 	})
-	
+	@Validate(IsPasswordsMatchingConstraint, {
+		message: 'Пароли не совпадают.'
+	})
 	passwordRepeat: string
 }

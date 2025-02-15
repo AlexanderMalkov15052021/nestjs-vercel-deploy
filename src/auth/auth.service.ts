@@ -13,6 +13,8 @@ import { UserService } from '../user/user.service'
 
 import { LoginDto } from './dto/login.dto'
 import { RegisterDto } from './dto/register.dto'
+import { EmailConfirmationService } from './email-confirmation/email-confirmation.service'
+import { ProviderService } from './provider/provider.service'
 import { TwoFactorAuthService } from './two-factor-auth/two-factor-auth.service'
 import { pool } from '../db/pool.module'
 
@@ -24,11 +26,16 @@ export class AuthService {
 	/**
 	 * Конструктор сервиса аутентификации.
 	 * @param userService - Сервис для работы с пользователями.
+	 * @param configService - Сервис для работы с конфигурацией приложения.
+	 * @param providerService - Сервис для работы с провайдерами аутентификации.
+	 * @param emailConfirmationService - Сервис для работы с подтверждением email.
 	 * @param twoFactorAuthService - Сервис для работы с двухфакторной аутентификацией.
 	 */
 	public constructor(
-		// private readonly prismaService: PrismaService,
 		private readonly userService: UserService,
+		private readonly configService: ConfigService,
+		private readonly providerService: ProviderService,
+		private readonly emailConfirmationService: EmailConfirmationService,
 		private readonly twoFactorAuthService: TwoFactorAuthService
 	) { }
 
@@ -62,6 +69,7 @@ export class AuthService {
 			[dto.email, dto.password, dto.name, '', 'CREDENTIALS', false]
 		);
 
+		await this.emailConfirmationService.sendVerificationToken(reqNewUser.rows[0].email);
 
 		return {
 			message:
@@ -96,7 +104,14 @@ export class AuthService {
 			)
 		}
 
-
+		if (!user.isVerified) {
+			await this.emailConfirmationService.sendVerificationToken(
+				user.email
+			)
+			throw new UnauthorizedException(
+				'Ваш email не подтвержден. Пожалуйста, проверьте вашу почту и подтвердите адрес.'
+			)
+		}
 
 		if (user.isTwoFactorEnabled) {
 			if (!dto.code) {
@@ -129,6 +144,8 @@ export class AuthService {
 		provider: string,
 		code: string
 	) {
+		const providerInstance = this.providerService.findByService(provider)
+		const profile = await providerInstance.findUserByCode(code)
 
 		// const account = await this.prismaService.account.findFirst({
 		// 	where: {
@@ -202,6 +219,9 @@ export class AuthService {
 						)
 					)
 				}
+				res.clearCookie(
+					this.configService.getOrThrow<string>('SESSION_NAME')
+				)
 				resolve()
 			})
 		})
@@ -216,7 +236,7 @@ export class AuthService {
 	 */
 	public async saveSession(req: Request, user: any) {
 		return new Promise((resolve, reject) => {
-			(req.session as any).userId = user.id
+			req.session.userId = user.id
 
 			req.session.save(err => {
 				if (err) {

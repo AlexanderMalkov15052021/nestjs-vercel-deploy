@@ -11,15 +11,10 @@
     "outDir": "./dist",
     "baseUrl": "./",
     "paths": {
-      "@/*": [
-        "src/*"
-      ],
-      "@prisma/__generated__": [
-        "prisma/__generated__"
-      ],
-      "@prisma/__generated__/*": [
-        "prisma/__generated__/*"
-      ]
+      // not working for Vercel
+      // "@/*": [
+      //   "src/*"
+      // ],
     },
     "incremental": true,
     "skipLibCheck": true,

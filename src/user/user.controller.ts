@@ -8,6 +8,8 @@ import {
 	Patch
 } from '@nestjs/common'
 
+import { Authorization } from '../auth/decorators/auth.decorator'
+import { Authorized } from '../auth/decorators/authorized.decorator'
 
 import { UpdateUserDto } from './dto/update-user.dto'
 import { UserService } from './user.service'
@@ -28,9 +30,10 @@ export class UserController {
 	 * @param userId - ID авторизованного пользователя.
 	 * @returns Профиль пользователя.
 	 */
+	@Authorization()
 	@HttpCode(HttpStatus.OK)
 	@Get('profile')
-	public async findProfile( userId: string) {
+	public async findProfile(@Authorized('id') userId: string) {
 		return this.userService.findById(userId)
 	}
 
@@ -52,10 +55,11 @@ export class UserController {
 	 * @param dto - Данные для обновления профиля.
 	 * @returns Обновленный профиль пользователя.
 	 */
+	@Authorization()
 	@HttpCode(HttpStatus.OK)
 	@Patch('profile')
 	public async updateProfile(
-		 userId: string,
+		@Authorized('id') userId: string,
 		@Body() dto: UpdateUserDto
 	) {
 		return this.userService.update(userId, dto)
