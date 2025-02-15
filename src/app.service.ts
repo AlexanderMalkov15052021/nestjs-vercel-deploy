@@ -2,7 +2,7 @@ import { Injectable, Res } from '@nestjs/common';
 import { Pool } from 'pg';
 import * as dotenv from 'dotenv';
 import { Response } from 'express';
-import { pool } from './db/pool.module';
+import { pool } from './db/pool.module';  // не работает с алиасами @/*
 
 dotenv.config();
 
@@ -12,6 +12,6 @@ export class AppService {
 
     const users = await pool.query(`SELECT * FROM users`)
 
-    return JSON.stringify({ res: "test!", data: users.rows });
+    return JSON.stringify({ res: "TESt!!!", data: users.rows });
   }
 }
