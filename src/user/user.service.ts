@@ -4,7 +4,7 @@ import { hash } from 'argon2'
 // import { PrismaService } from '@/prisma/prisma.service'
 
 import { UpdateUserDto } from './dto/update-user.dto'
-import { pool } from '../db/pool.module';
+import { pool } from '@/db/pool.module';
 
 /**
  * Сервис для работы с пользователями.

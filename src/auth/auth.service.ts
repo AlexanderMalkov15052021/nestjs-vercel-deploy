@@ -9,12 +9,12 @@ import { ConfigService } from '@nestjs/config'
 import { verify } from 'argon2'
 import { Request, Response } from 'express'
 
-import { UserService } from '../user/user.service'
+import { UserService } from '@/user/user.service'
 
 import { LoginDto } from './dto/login.dto'
 import { RegisterDto } from './dto/register.dto'
 import { TwoFactorAuthService } from './two-factor-auth/two-factor-auth.service'
-import { pool } from '../db/pool.module'
+import { pool } from '@/db/pool.module'
 
 /**
  * Сервис для аутентификации и управления сессиями пользователей.
@@ -96,7 +96,7 @@ export class AuthService {
 			)
 		}
 
-		
+
 
 		if (user.isTwoFactorEnabled) {
 			if (!dto.code) {
