@@ -2,7 +2,7 @@ import { Injectable, Res } from '@nestjs/common';
 import { Pool } from 'pg';
 import * as dotenv from 'dotenv';
 import { Response } from 'express';
-import { pool } from '@/src/db/pool.module';
+import { pool } from './db/pool.module';
 
 dotenv.config();
 
