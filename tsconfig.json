@@ -11,10 +11,9 @@
     "outDir": "./dist",
     "baseUrl": "./",
     "paths": {
-      "@/*": [ "src/db/*"],
-      // "@/*": [
-      //   "src/*"
-      // ],
+      "@/*": [
+        "src/*"
+      ],
       "@prisma/__generated__": [
         "prisma/__generated__"
       ],
