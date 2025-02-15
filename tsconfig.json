@@ -9,10 +9,10 @@
     "target": "ES2021",
     "sourceMap": true,
     "outDir": "./dist",
-    "baseUrl": "./",
+    "baseUrl": "./src",
     "paths": {
       "@/*": [
-        "src/*"
+        "/*"
       ],
       "@prisma/__generated__": [
         "prisma/__generated__"
