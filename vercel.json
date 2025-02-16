@@ -24,7 +24,7 @@
             "headers": [
                 {
                     "key": "Content-Security-Policy",
-                    "value": "default-src 'self'; script-src 'self' auth-front-vercel.vercel.app; style-src 'self' auth-front-vercel.vercel.app;"
+                    "value": "default-src 'self'; script-src 'self' example.com; style-src 'self' example.com;"
                 },
                 {
                     "key": "Strict-Transport-Security",
