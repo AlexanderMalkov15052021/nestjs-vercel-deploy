@@ -1,6 +1,5 @@
 import {
 	BadRequestException,
-	ConflictException,
 	forwardRef,
 	Inject,
 	Injectable,
@@ -15,8 +14,8 @@ import { UserService } from '../../user/user.service'
 import { AuthService } from '../auth.service'
 
 import { ConfirmationDto } from './dto/confirmation.dto'
-
 import { pool } from '../../db/pool.module'
+import { TokenType } from '../../libs/common/types'
 
 /**
  * Сервис для управления подтверждением электронной почты.
@@ -52,29 +51,31 @@ export class EmailConfirmationService {
 		// 	}
 		// })
 
-		// if (!existingToken) {
-		// 	throw new NotFoundException(
-		// 		'Токен подтверждения не найден. Пожалуйста, убедитесь, что у вас правильный токен.'
-		// 	)
-		// }
+		const existingTokenReq = await pool.query(`SELECT * FROM tokens WHERE token = $1 and type = $2`, [dto.token, TokenType.VERIFICATION]);
 
-		// const hasExpired = new Date(existingToken.expiresIn) < new Date()
+		if (!existingTokenReq.rows[0]) {
+			throw new NotFoundException(
+				'Токен подтверждения не найден. Пожалуйста, убедитесь, что у вас правильный токен.'
+			)
+		}
 
-		// if (hasExpired) {
-		// 	throw new BadRequestException(
-		// 		'Токен подтверждения истек. Пожалуйста, запросите новый токен для подтверждения.'
-		// 	)
-		// }
+		const hasExpired = new Date(existingTokenReq.rows[0].expiresIn) < new Date()
 
-		// const existingUser = await this.userService.findByEmail(
-		// 	existingToken.email
-		// )
+		if (hasExpired) {
+			throw new BadRequestException(
+				'Токен подтверждения истек. Пожалуйста, запросите новый токен для подтверждения.'
+			)
+		}
 
-		// if (!existingUser) {
-		// 	throw new NotFoundException(
-		// 		'Пользователь не найден. Пожалуйста, проверьте введенный адрес электронной почты и попробуйте снова.'
-		// 	)
-		// }
+		const existingUser = await this.userService.findByEmail(
+			existingTokenReq.rows[0].email
+		)
+
+		if (!existingUser) {
+			throw new NotFoundException(
+				'Пользователь не найден. Пожалуйста, проверьте введенный адрес электронной почты и попробуйте снова.'
+			)
+		}
 
 		// await this.prismaService.user.update({
 		// 	where: {
@@ -85,6 +86,8 @@ export class EmailConfirmationService {
 		// 	}
 		// })
 
+		await pool.query(`UPDATE users SET is_verified = $1 WHERE id = $2`, [true, existingUser.id]);
+
 		// const token = await this.prismaService.token.findUnique({
 		// 	where: {
 		// 		id: existingToken.id,
@@ -92,16 +95,24 @@ export class EmailConfirmationService {
 		// 	}
 		// });
 
-		// if (token) {
-		// 	await this.prismaService.token.delete({
-		// 		where: {
-		// 			id: existingToken.id,
-		// 			type: TokenType.VERIFICATION
-		// 		}
-		// 	});
-		// }
+		const token = await pool.query(
+			`SELECT * FROM tokens WHERE id = $1 and type = $2`,
+			[existingTokenReq.rows[0].id, TokenType.VERIFICATION]
+		);
 
-		return `this.authService.saveSession(req, existingUser)`
+		if (token) {
+			// await this.prismaService.token.delete({
+			// 	where: {
+			// 		id: existingToken.id,
+			// 		type: TokenType.VERIFICATION
+			// 	}
+			// });
+
+			await pool.query(`DELETE FROM tokens WHERE id = $1 and type = $2`, [existingTokenReq.rows[0].id, TokenType.VERIFICATION])
+
+		}
+
+		return this.authService.saveSession(req, existingUser)
 	}
 
 	/**
@@ -110,12 +121,12 @@ export class EmailConfirmationService {
 	 * @returns true, если токен успешно отправлен.
 	 */
 	public async sendVerificationToken(email: string) {
-		const verificationToken = await this.generateVerificationToken(email);
+		const verificationToken = await this.generateVerificationToken(email)
 
-		// await this.mailService.sendConfirmationEmail(
-		// 	verificationToken.email,
-		// 	verificationToken.token
-		// )
+		await this.mailService.sendConfirmationEmail(
+			verificationToken.email,
+			verificationToken.token
+		)
 
 		return true
 	}

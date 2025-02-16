@@ -6,7 +6,7 @@ import {
 	UnauthorizedException
 } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
-import { verify } from 'argon2'
+import { hash, verify } from 'argon2'
 import { Request, Response } from 'express'
 
 import { UserService } from '../user/user.service'
@@ -17,6 +17,7 @@ import { EmailConfirmationService } from './email-confirmation/email-confirmatio
 import { ProviderService } from './provider/provider.service'
 import { TwoFactorAuthService } from './two-factor-auth/two-factor-auth.service'
 import { pool } from '../db/pool.module'
+import { AuthMethod, User } from '../libs/common/types'
 
 /**
  * Сервис для аутентификации и управления сессиями пользователей.
@@ -46,14 +47,25 @@ export class AuthService {
 	 * @throws ConflictException - Если пользователь с таким email уже существует.
 	 */
 	public async register(dto: RegisterDto) {
-
-		const isExists = await this.userService.findByEmail(dto.email);
+		const isExists = await this.userService.findByEmail(dto.email)
 
 		if (isExists) {
 			throw new ConflictException(
 				'Регистрация не удалась. Пользователь с таким email уже существует. Пожалуйста, используйте другой email или войдите в систему.'
 			)
 		}
+
+		const reqNewUser = await pool.query(
+			`INSERT INTO users (email, password, display_name, picture, method, is_verified) values ($1, $2, $3, $4, $5, $6) RETURNING *`,
+			[
+				dto.email,
+				await hash(dto.password),
+				dto.name,
+				'',
+				'CREDENTIALS',
+				false
+			]
+		);
 
 		// const newUser = await this.userService.create(
 		// 	dto.email,
@@ -63,11 +75,6 @@ export class AuthService {
 		// 	AuthMethod.CREDENTIALS,
 		// 	false
 		// )
-
-		const reqNewUser = await pool.query(
-			`INSERT INTO users (email, password, display_name, picture, method, is_verified) values ($1, $2, $3, $4, $5, $6) RETURNING *`,
-			[dto.email, dto.password, dto.name, '', 'CREDENTIALS', false]
-		);
 
 		await this.emailConfirmationService.sendVerificationToken(reqNewUser.rows[0].email);
 
@@ -104,7 +111,7 @@ export class AuthService {
 			)
 		}
 
-		if (!user.isVerified) {
+		if (!user.is_verified) {
 			await this.emailConfirmationService.sendVerificationToken(
 				user.email
 			)
@@ -113,7 +120,7 @@ export class AuthService {
 			)
 		}
 
-		if (user.isTwoFactorEnabled) {
+		if (user.is_two_factor_enabled) {
 			if (!dto.code) {
 				await this.twoFactorAuthService.sendTwoFactorToken(user.email)
 
@@ -154,15 +161,18 @@ export class AuthService {
 		// 	}
 		// })
 
-		// let user = account?.userId
-		// 	? await this.userService.findById(account.userId)
-		// 	: null
+		const accountReq = await pool.query(`SELECT * FROM accounts WHERE id = $1 and provider = $2`, [profile.id, profile.provider]);
 
-		// if (user) {
-		// 	return this.saveSession(req, user)
-		// }
+		let user: any = accountReq.rows[0]?.userId
+			? await this.userService.findById(accountReq.rows[0].userId)
+			: null
+
+		if (user) {
+			return this.saveSession(req, user)
+		}
 
 		// checking for a user
+
 		// const foundUser = await this.prismaService.user.findUnique({
 		// 	where: {
 		// 		email: profile.email
@@ -172,34 +182,42 @@ export class AuthService {
 		// 	}
 		// });
 
-		// if (foundUser) {
-		// 	user = foundUser;
-		// }
-		// else {
-		// 	user = await this.userService.create(
-		// 		profile.email,
-		// 		'',
-		// 		profile.name,
-		// 		profile.picture,
-		// 		AuthMethod[profile.provider.toUpperCase()],
-		// 		true
-		// 	);
-		// }
+		const foundUserReq = await pool.query(`SELECT * FROM users WHERE email = $1`, [profile.email]);
 
-		// if (!account) {
-		// 	await this.prismaService.account.create({
-		// 		data: {
-		// 			userId: user.id,
-		// 			type: 'oauth',
-		// 			provider: profile.provider,
-		// 			accessToken: profile.access_token,
-		// 			refreshToken: profile.refresh_token,
-		// 			expiresAt: profile.expires_at
-		// 		}
-		// 	})
-		// }
+		if (foundUserReq.rows[0]) {
+			user = foundUserReq.rows[0];
+		}
+		else {
+			user = await this.userService.create(
+				profile.email,
+				'',
+				profile.name,
+				profile.picture,
+				AuthMethod[profile.provider.toUpperCase()],
+				true
+			);
+		}
 
-		return `this.saveSession(req, user)`
+		if (!accountReq.rows[0]) {
+			// await this.prismaService.account.create({
+			// 	data: {
+			// 		userId: user.id,
+			// 		type: 'oauth',
+			// 		provider: profile.provider,
+			// 		accessToken: profile.access_token,
+			// 		refreshToken: profile.refresh_token,
+			// 		expiresAt: profile.expires_at
+			// 	}
+			// })
+
+			await pool.query(
+				`INSERT INTO accounts (user_id, type, provider, access_token, refresh_token, expires_at) values ($1, $2, $3, $4, $5, $6) RETURNING *`,
+				[user.id, 'oauth', profile.provider, profile.access_token, profile.refresh_token, profile.expires_at]
+			)
+
+		}
+
+		return this.saveSession(req, user)
 	}
 
 	/**
@@ -234,7 +252,7 @@ export class AuthService {
 	 * @returns Промис, который разрешается после сохранения сессии.
 	 * @throws InternalServerErrorException - Если возникла проблема при сохранении сессии.
 	 */
-	public async saveSession(req: Request, user: any) {
+	public async saveSession(req: Request, user: User) {
 		return new Promise((resolve, reject) => {
 			req.session.userId = user.id
 

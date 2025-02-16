@@ -11,6 +11,8 @@ import { UserService } from '../../user/user.service'
 
 import { NewPasswordDto } from './dto/new-password.dto'
 import { ResetPasswordDto } from './dto/reset-password.dto'
+import { pool } from '../../db/pool.module'
+import { TokenType } from 'src/libs/common/types'
 
 /**
  * Сервис для управления восстановлением пароля.
@@ -34,22 +36,22 @@ export class PasswordRecoveryService {
 	 * @throws NotFoundException - Если пользователь не найден.
 	 */
 	public async reset(dto: ResetPasswordDto) {
-		// const existingUser = await this.userService.findByEmail(dto.email)
+		const existingUser = await this.userService.findByEmail(dto.email)
 
-		// if (!existingUser) {
-		// 	throw new NotFoundException(
-		// 		'Пользователь не найден. Пожалуйста, проверьте введенный адрес электронной почты и попробуйте снова.'
-		// 	)
-		// }
+		if (!existingUser) {
+			throw new NotFoundException(
+				'Пользователь не найден. Пожалуйста, проверьте введенный адрес электронной почты и попробуйте снова.'
+			)
+		}
 
-		// const passwordResetToken = await this.generatePasswordResetToken(
-		// 	existingUser.email
-		// )
+		const passwordResetToken = await this.generatePasswordResetToken(
+			existingUser.email
+		)
 
-		// await this.mailService.sendPasswordResetEmail(
-		// 	passwordResetToken.email,
-		// 	passwordResetToken.token
-		// )
+		await this.mailService.sendPasswordResetEmail(
+			passwordResetToken.email,
+			passwordResetToken.token
+		)
 
 		return true
 	}
@@ -63,6 +65,7 @@ export class PasswordRecoveryService {
 	 * @throws BadRequestException - Если токен истек.
 	 */
 	public async new(dto: NewPasswordDto, token: string) {
+
 		// const existingToken = await this.prismaService.token.findFirst({
 		// 	where: {
 		// 		token,
@@ -70,29 +73,31 @@ export class PasswordRecoveryService {
 		// 	}
 		// })
 
-		// if (!existingToken) {
-		// 	throw new NotFoundException(
-		// 		'Токен не найден. Пожалуйста, проверьте правильность введенного токена или запросите новый.'
-		// 	)
-		// }
+		const existingTokenReq = await pool.query(`SELECT * FROM tokens WHERE token = $1 and type = $2`, [token, TokenType.PASSWORD_RESET]);
 
-		// const hasExpired = new Date(existingToken.expiresIn) < new Date()
+		if (!existingTokenReq.rows[0]) {
+			throw new NotFoundException(
+				'Токен не найден. Пожалуйста, проверьте правильность введенного токена или запросите новый.'
+			)
+		}
 
-		// if (hasExpired) {
-		// 	throw new BadRequestException(
-		// 		'Токен истек. Пожалуйста, запросите новый токен для подтверждения сброса пароля.'
-		// 	)
-		// }
+		const hasExpired = new Date(existingTokenReq.rows[0].expiresIn) < new Date()
 
-		// const existingUser = await this.userService.findByEmail(
-		// 	existingToken.email
-		// )
+		if (hasExpired) {
+			throw new BadRequestException(
+				'Токен истек. Пожалуйста, запросите новый токен для подтверждения сброса пароля.'
+			)
+		}
 
-		// if (!existingUser) {
-		// 	throw new NotFoundException(
-		// 		'Пользователь не найден. Пожалуйста, проверьте введенный адрес электронной почты и попробуйте снова.'
-		// 	)
-		// }
+		const existingUser = await this.userService.findByEmail(
+			existingTokenReq.rows[0].email
+		);
+
+		if (!existingUser) {
+			throw new NotFoundException(
+				'Пользователь не найден. Пожалуйста, проверьте введенный адрес электронной почты и попробуйте снова.'
+			)
+		}
 
 		// await this.prismaService.user.update({
 		// 	where: {
@@ -103,14 +108,18 @@ export class PasswordRecoveryService {
 		// 	}
 		// })
 
+		await pool.query(`UPDATE users SET password = $1 WHERE id = $2`, [await hash(dto.password), existingUser.id]);
+
 		// await this.prismaService.token.delete({
 		// 	where: {
-		// 		id: existingToken.id,
+		// 		id: existingTokenReq.rows[0].id,
 		// 		type: TokenType.PASSWORD_RESET
 		// 	}
 		// })
 
-		return true
+		await pool.query(`DELETE FROM tokens WHERE id = $1 and type = $2`, [existingTokenReq.rows[0].id, TokenType.PASSWORD_RESET]);
+
+		return true;
 	}
 
 	/**
@@ -119,8 +128,8 @@ export class PasswordRecoveryService {
 	 * @returns Объект токена сброса пароля.
 	 */
 	private async generatePasswordResetToken(email: string) {
-		// const token = uuidv4()
-		// const expiresIn = new Date(new Date().getTime() + 3600 * 1000)
+		const token = uuidv4()
+		const expiresIn = new Date(new Date().getTime() + 3600 * 1000)
 
 		// const existingToken = await this.prismaService.token.findFirst({
 		// 	where: {
@@ -129,14 +138,18 @@ export class PasswordRecoveryService {
 		// 	}
 		// })
 
-		// if (existingToken) {
-		// 	await this.prismaService.token.delete({
-		// 		where: {
-		// 			id: existingToken.id,
-		// 			type: TokenType.PASSWORD_RESET
-		// 		}
-		// 	})
-		// }
+		const existingTokenReq = await pool.query(`SELECT * FROM tokens WHERE email = $1 and type = $2`, [email, TokenType.PASSWORD_RESET]);
+
+		if (existingTokenReq.rows[0]) {
+			// await this.prismaService.token.delete({
+			// 	where: {
+			// 		id: existingTokenReq.rows[0].id,
+			// 		type: TokenType.PASSWORD_RESET
+			// 	}
+			// })
+
+			await pool.query(`DELETE FROM tokens WHERE id = $1 and type = $2`, [existingTokenReq.rows[0].id, TokenType.VERIFICATION])
+		}
 
 		// const passwordResetToken = await this.prismaService.token.create({
 		// 	data: {
@@ -147,6 +160,11 @@ export class PasswordRecoveryService {
 		// 	}
 		// })
 
-		return `passwordResetToken`
+		const passwordResetTokenReq = await pool.query(
+			`INSERT INTO tokens (email, token, expires_in, type) values ($1, $2, $3, $4) RETURNING *`,
+			[email, token, expiresIn, TokenType.PASSWORD_RESET]
+		);
+
+		return passwordResetTokenReq.rows[0]
 	}
 }

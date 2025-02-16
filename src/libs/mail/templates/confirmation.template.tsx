@@ -7,14 +7,6 @@ interface ConfirmationTemplateProps {
 	token: string
 }
 
-/**
- * Генерирует шаблон письма для подтверждения электронной почты пользователя.
- * Ссылка для подтверждения формируется из домена и токена. Письмо информирует,
- * что ссылка действительна 1 час.
- * 
- * @param {ConfirmationTemplateProps} props - Домен и токен для генерации ссылки.
- * @returns {JSX.Element} Сгенерированный шаблон письма.
- */
 export function ConfirmationTemplate({
 	domain,
 	token

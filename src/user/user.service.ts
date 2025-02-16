@@ -1,8 +1,9 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common'
+import { Injectable, NotFoundException } from '@nestjs/common'
 import { hash } from 'argon2'
 
 import { UpdateUserDto } from './dto/update-user.dto'
-import { pool } from '../db/pool.module';
+import { pool } from '../db/pool.module'
+import { AuthMethod } from 'src/libs/common/types';
 
 /**
  * Сервис для работы с пользователями.
@@ -11,6 +12,7 @@ import { pool } from '../db/pool.module';
 export class UserService {
 
 	public async findById(id: string) {
+
 		// const user = await this.prismaService.user.findUnique({
 		// 	where: {
 		// 		id
@@ -20,13 +22,15 @@ export class UserService {
 		// 	}
 		// })
 
-		// if (!user) {
-		// 	throw new NotFoundException(
-		// 		'Пользователь не найден. Пожалуйста, проверьте введенные данные.'
-		// 	)
-		// }
+		const userReq = await pool.query(`SELECT * FROM users WHERE id = $1`, [id]);
 
-		return `user`
+		if (!userReq.rows[0]) {
+			throw new NotFoundException(
+				'Пользователь не найден. Пожалуйста, проверьте введенные данные.'
+			)
+		}
+
+		return userReq.rows[0];
 	}
 
 	public async findByEmail(email: string) {
@@ -59,8 +63,7 @@ export class UserService {
 		password: string,
 		displayName: string,
 		picture: string,
-		method: "",
-		// method: AuthMethod,
+		method: AuthMethod,
 		isVerified: boolean
 	) {
 		// const user = await this.prismaService.user.create({
@@ -77,7 +80,12 @@ export class UserService {
 		// 	}
 		// })
 
-		return 1
+		const userReq = await pool.query(
+			`INSERT INTO users (email, password, display_name, picture, method, is_verified) values ($1, $2, $3, $4, $5, $6) RETURNING *`,
+			[email, password ? await hash(password) : '', displayName, picture, method, isVerified]
+		)
+
+		return userReq.rows[0]
 	}
 
 	/**
@@ -87,7 +95,7 @@ export class UserService {
 	 * @returns Обновленный пользователь.
 	 */
 	public async update(userId: string, dto: UpdateUserDto) {
-		// const user = await this.findById(userId)
+		const user = await this.findById(userId)
 
 		// const updatedUser = await this.prismaService.user.update({
 		// 	where: {
@@ -100,6 +108,11 @@ export class UserService {
 		// 	}
 		// })
 
-		return 1
+		const updatedUserReq = await pool.query(
+			`UPDATE users SET email = $1, display_name = $2, is_two_factor_enabled = $3  WHERE id = $4`,
+			[dto.email, dto.name, dto.isTwoFactorEnabled, user.id]
+		);
+
+		return updatedUserReq.rows[0];
 	}
 }
