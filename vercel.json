@@ -18,7 +18,7 @@
             ],
             "headers": [
                 {
-                    "source": "/vercel-config-cors",
+                    "source": "/(.*)",
                     "headers": [
                         {
                             "key": "Access-Control-Allow-Origin",
