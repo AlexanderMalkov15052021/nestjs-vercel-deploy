@@ -1,18 +1,18 @@
 export enum UserRole {
-    REGULAR,
-    ADMIN
+    REGULAR = "REGULAR",
+    ADMIN = "ADMIN"
 }
 
 export enum AuthMethod {
-    CREDENTIALS,
-    GOOGLE,
-    YANDEX
+    CREDENTIALS = "CREDENTIALS",
+    GOOGLE = "GOOGLE",
+    YANDEX = "YANDEX"
 }
 
 export enum TokenType {
-    VERIFICATION,
-    TWO_FACTOR,
-    PASSWORD_RESET
+    VERIFICATION = "VERIFICATION",
+    TWO_FACTOR = "TWO_FACTOR",
+    PASSWORD_RESET = "PASSWORD_RESET"
 }
 
 
