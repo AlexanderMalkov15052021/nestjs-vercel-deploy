@@ -43,6 +43,11 @@ async function bootstrap() {
     })
   )
 
+  app.enableCors({
+    origin: process.env.ALLOWED_ORIGIN,
+    credentials: true,
+    exposedHeaders: ['set-cookie']
+  })
 
   await app.listen(process.env.APPLICATION_PORT ?? 3000);
 }
