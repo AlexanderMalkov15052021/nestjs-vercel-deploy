@@ -15,10 +15,10 @@
                 "GET",
                 "PUT",
                 "DELETE"
-            ]
+            ],
+            "headers": {
+                "Access-Control-Allow-Origin": "*"
+            }
         }
-    ],
-    "headers": {
-        "Access-Control-Allow-Origin": "*"
-    }
+    ]
 }
