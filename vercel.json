@@ -16,9 +16,25 @@
                 "PUT",
                 "DELETE"
             ],
-            "headers": {
-                "Access-Control-Allow-Origin": "*"
-            }
+            "headers": [
+                {
+                    "source": "/vercel-config-cors",
+                    "headers": [
+                        {
+                            "key": "Access-Control-Allow-Origin",
+                            "value": "*"
+                        },
+                        {
+                            "key": "Access-Control-Allow-Methods",
+                            "value": "GET, POST, PUT, DELETE, OPTIONS"
+                        },
+                        {
+                            "key": "Access-Control-Allow-Headers",
+                            "value": "Content-Type, Authorization"
+                        }
+                    ]
+                }
+            ]
         }
     ]
 }
