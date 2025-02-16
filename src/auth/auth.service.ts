@@ -46,17 +46,7 @@ export class AuthService {
 	 * @returns Объект с сообщением об успешной регистрации.
 	 * @throws ConflictException - Если пользователь с таким email уже существует.
 	 */
-	public async register(req: Request, res: Response, dto: RegisterDto) {
-
-		res.setHeader('Access-Control-Allow-Origin', '*');
-		res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-		res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-
-		if (req.method === 'OPTIONS') {
-			res.status(200).end();
-			return;
-		}
-
+	public async register(dto: RegisterDto) {
 		const isExists = await this.userService.findByEmail(dto.email)
 
 		if (isExists) {
@@ -102,17 +92,7 @@ export class AuthService {
 	 * @throws NotFoundException - Если пользователь не найден.
 	 * @throws UnauthorizedException - Если пароль неверный или email не подтвержден.
 	 */
-	public async login(req: Request, res: Response, dto: LoginDto) {
-
-		res.setHeader('Access-Control-Allow-Origin', '*');
-		res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-		res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-
-		if (req.method === 'OPTIONS') {
-			res.status(200).end();
-			return;
-		}
-
+	public async login(req: Request, dto: LoginDto) {
 		const user = await this.userService.findByEmail(dto.email)
 
 		// passwd(123456) = "$argon2id$v=19$m=65536,t=3,p=4$JZQ85cVd7xTOefoYC7NF9A$fUoHl3vJrcRBE4wevWwg1XFCwVV5NuK6XCGK+yAyBlY"
