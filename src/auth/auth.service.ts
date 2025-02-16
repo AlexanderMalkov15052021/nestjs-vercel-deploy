@@ -46,7 +46,17 @@ export class AuthService {
 	 * @returns Объект с сообщением об успешной регистрации.
 	 * @throws ConflictException - Если пользователь с таким email уже существует.
 	 */
-	public async register(dto: RegisterDto) {
+	public async register(req: Request, res: Response, dto: RegisterDto) {
+
+		res.setHeader('Access-Control-Allow-Origin', '*');
+		res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+		res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+		if (req.method === 'OPTIONS') {
+			res.status(200).end();
+			return;
+		}
+
 		const isExists = await this.userService.findByEmail(dto.email)
 
 		if (isExists) {
