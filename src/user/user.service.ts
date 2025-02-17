@@ -33,6 +33,28 @@ export class UserService {
 		return userReq.rows[0];
 	}
 
+	// установить ограничение, удаляет только администратор
+
+	public async getAllUsers() {
+
+		const userReq = await pool.query(`SELECT * FROM users`);
+
+		if (!userReq.rows.length) {
+			throw new NotFoundException(
+				'Пользователи не найдены. Таблица пуста.'
+			)
+		}
+
+		return userReq.rows;
+	}
+
+	public async deleteAllUsers() {
+
+		await pool.query(`DELETE FROM users`);
+
+		return true;
+	}
+
 	public async findByEmail(email: string) {
 		// const user = await this.prismaService.user.findUnique({
 		// 	where: {

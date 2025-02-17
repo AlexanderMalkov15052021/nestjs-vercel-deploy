@@ -23,7 +23,7 @@ export class UserController {
 	 * Конструктор контроллера пользователей.
 	 * @param userService - Сервис для работы с пользователями.
 	 */
-	public constructor(private readonly userService: UserService) {}
+	public constructor(private readonly userService: UserService) { }
 
 	/**
 	 * Получает профиль текущего пользователя.
@@ -47,6 +47,18 @@ export class UserController {
 	@Get('by-id/:id')
 	public async findById(@Param('id') id: string) {
 		return this.userService.findById(id)
+	}
+
+	@HttpCode(HttpStatus.OK)
+	@Get('all')
+	public async getAllUsers() {
+		return this.userService.getAllUsers()
+	}
+
+	@HttpCode(HttpStatus.OK)
+	@Get('delete')
+	public async deleteAllUsers() {
+		return this.userService.deleteAllUsers()
 	}
 
 	/**
