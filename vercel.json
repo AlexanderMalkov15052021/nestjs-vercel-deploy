@@ -11,12 +11,15 @@
             "src": "/(.*)",
             "dest": "src/main.ts",
             "methods": [
-                "POST",
                 "GET",
+                "POST",
                 "PUT",
-                "DELETE",
+                "PATCH",
                 "OPTIONS",
-                "PATCH"
+                "DELETE",
+                "HEAD",
+                "CONNECT",
+                "TRACE"
             ],
             "headers": {
                 "Access-Control-Allow-Origin": "https://auth-front-vercel.vercel.app"
