@@ -38,7 +38,7 @@ async function bootstrap() {
         secure: parseBoolean(
           process.env.SESSION_SECURE
         ),
-        sameSite: 'none',
+        sameSite: 'lax',
       }
     })
   );
@@ -47,7 +47,6 @@ async function bootstrap() {
     origin: process.env.ALLOWED_ORIGIN,
     credentials: true,
     exposedHeaders: ['set-cookie'],
-    allowedHeaders: 'Content-Type, Authorization',
     methods: [
       "GET",
       "POST",
