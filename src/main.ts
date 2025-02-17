@@ -33,7 +33,7 @@ async function bootstrap() {
         maxAge: ms(process.env.SESSION_MAX_AGE as StringValue),
         domain: process.env.SESSION_DOMAIN,
         httpOnly: parseBoolean(
-          process.env.SESSION_HTTP_ONLY
+          'false'
         ),
         secure: parseBoolean(
           process.env.SESSION_SECURE
@@ -60,7 +60,7 @@ async function bootstrap() {
     ]
   })
 
-  app.use(cors({credentials: true, origin: process.env.ALLOWED_ORIGIN}));
+  app.use(cors({ credentials: true, origin: process.env.ALLOWED_ORIGIN }));
 
   await app.listen(process.env.APPLICATION_PORT ?? 3000);
 }
