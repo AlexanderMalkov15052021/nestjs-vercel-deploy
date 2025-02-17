@@ -1,6 +1,10 @@
-require('dotenv').config()
+import * as pg from 'pg';
 
-const Pool = require('pg').Pool
+import * as dotenv from 'dotenv';
+
+dotenv.config();
+
+const { Pool } = pg;
 
 export const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
@@ -8,9 +12,10 @@ export const pool = new Pool({
 });
 
 // export const pool = new Pool({
-//     user: process.env.PG_USER,
-//     password: process.env.PG_PASSWORD,
-//     host: process.env.PG_HOST,
-//     port: process.env.PG_PORT,
-//     database: process.env.PG_DB
+//     user: process.env.POSTGRES_USER,
+//     password: process.env.POSTGRES_PASSWORD,
+//     host: process.env.POSTGRES_HOST,
+//     port: Number(process.env.POSTGRES_PORT),
+//     database: process.env.POSTGRES_DB,
+//     ssl: process.env.DATABASE_URL ? true : false
 // })

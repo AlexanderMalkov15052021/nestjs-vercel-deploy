@@ -1,63 +1,51 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import IORedis from 'ioredis'
-import cookieParser from 'cookie-parser'
-import session from 'express-session'
-import { ms, StringValue } from './libs/common/utils/ms.util'
-import { parseBoolean } from './libs/common/utils/parse-boolean.util'
-import { RedisStore } from 'connect-redis'
-
+import * as cookieParser from 'cookie-parser'
+import * as session from 'express-session'
+import * as pgConnect from 'connect-pg-simple';
 import * as dotenv from 'dotenv';
+import { ms, StringValue } from './libs/common/utils/ms.util';
+import { parseBoolean } from './libs/common/utils/parse-boolean.util';
+import { pool } from './db/pool.module';
 
 dotenv.config();
+
+const pgSession = pgConnect(session);
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  const redis = new IORedis(process.env.REDIS_URL);
-
-  app.use((cookieParser as any)(process.env.COOKIES_SECRET));
+  app.use(cookieParser(process.env.COOKIES_SECRET));
 
   app.use(
-    (session as any)({
-      // Настройки управления сессиями с использованием Redis
+    session({
+      store: new pgSession({
+        pool: pool,
+        tableName: 'user_sessions',
+        createTableIfMissing: true
+      }),
       secret: process.env.SESSION_SECRET,
       name: process.env.SESSION_NAME,
       resave: true,
       saveUninitialized: false,
       cookie: {
-        domain: process.env.SESSION_DOMAIN,
         maxAge: ms(process.env.SESSION_MAX_AGE as StringValue),
+        domain: process.env.SESSION_DOMAIN,
         httpOnly: parseBoolean(
           process.env.SESSION_HTTP_ONLY
         ),
         secure: parseBoolean(
           process.env.SESSION_SECURE
         ),
-        sameSite: 'none',
-      },
-      store: new RedisStore({
-        client: redis,
-        prefix: process.env.SESSION_FOLDER
-      })
+        sameSite: 'lax',
+      }
     })
-  )
+  );
 
   app.enableCors({
-    origin: [process.env.ALLOWED_ORIGIN],
+    origin: process.env.ALLOWED_ORIGIN,
     credentials: true,
-    exposedHeaders: ['set-cookie'],
-    methods: [
-      "GET",
-      "POST",
-      "PUT",
-      "PATCH",
-      "OPTIONS",
-      "DELETE",
-      "HEAD",
-      "CONNECT",
-      "TRACE"
-    ]
+    exposedHeaders: ['set-cookie']
   })
 
   await app.listen(process.env.APPLICATION_PORT ?? 3000);
