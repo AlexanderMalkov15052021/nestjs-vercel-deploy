@@ -7,6 +7,7 @@ import * as dotenv from 'dotenv';
 import { ms, StringValue } from './libs/common/utils/ms.util';
 import { parseBoolean } from './libs/common/utils/parse-boolean.util';
 import { pool } from './db/pool.module';
+import cors from 'cors';
 
 dotenv.config();
 
@@ -58,6 +59,8 @@ async function bootstrap() {
       "TRACE"
     ]
   })
+
+  app.use(cors({credentials: true, origin: process.env.ALLOWED_ORIGIN}));
 
   await app.listen(process.env.APPLICATION_PORT ?? 3000);
 }
