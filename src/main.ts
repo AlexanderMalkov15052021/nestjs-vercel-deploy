@@ -31,7 +31,7 @@ async function bootstrap() {
       saveUninitialized: false,
       cookie: {
         maxAge: ms(process.env.SESSION_MAX_AGE as StringValue),
-        domain: process.env.APPLICATION_URL,
+        domain: process.env.SESSION_DOMAIN,
         httpOnly: parseBoolean(
           process.env.SESSION_HTTP_ONLY
         ),
