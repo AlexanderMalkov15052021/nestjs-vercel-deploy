@@ -31,9 +31,9 @@ async function bootstrap() {
       saveUninitialized: false,
       cookie: {
         maxAge: ms(process.env.SESSION_MAX_AGE as StringValue),
-        domain: process.env.SESSION_DOMAIN,
+        domain: process.env.APPLICATION_URL,
         httpOnly: parseBoolean(
-          'false'
+          process.env.SESSION_HTTP_ONLY
         ),
         secure: parseBoolean(
           process.env.SESSION_SECURE
@@ -47,6 +47,7 @@ async function bootstrap() {
     origin: process.env.ALLOWED_ORIGIN,
     credentials: true,
     exposedHeaders: ['set-cookie'],
+    allowedHeaders: 'Content-Type, Authorization',
     methods: [
       "GET",
       "POST",
@@ -60,7 +61,7 @@ async function bootstrap() {
     ]
   })
 
-  app.use(cors({ credentials: true, origin: process.env.ALLOWED_ORIGIN }));
+  app.use(cors({credentials: true, origin: process.env.ALLOWED_ORIGIN}));
 
   await app.listen(process.env.APPLICATION_PORT ?? 3000);
 }
