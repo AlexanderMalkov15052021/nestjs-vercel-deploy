@@ -57,8 +57,7 @@ async function bootstrap() {
       "HEAD",
       "CONNECT",
       "TRACE"
-    ],
-    allowedHeaders: 'X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept, Observe',
+    ]
   })
 
   await app.listen(process.env.APPLICATION_PORT ?? 3000);
