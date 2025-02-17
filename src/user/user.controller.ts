@@ -30,6 +30,7 @@ export class UserController {
 	 * @param userId - ID авторизованного пользователя.
 	 * @returns Профиль пользователя.
 	 */
+	@Authorization()
 	@HttpCode(HttpStatus.OK)
 	@Get('profile')
 	public async findProfile(@Authorized('id') userId: string) {
