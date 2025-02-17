@@ -4,6 +4,7 @@ import { AuthGuard } from '../guards/auth.guard'
 import { RolesGuard } from '../guards/roles.guard'
 
 import { Roles } from './roles.decorator'
+import { UserRole } from '../../libs/common/types'
 
 /**
  * Декоратор для авторизации пользователей с определенными ролями.
@@ -14,7 +15,7 @@ import { Roles } from './roles.decorator'
  * @param roles - Массив ролей, для которых требуется доступ.
  * @returns Декораторы, применяемые к методу или классу.
  */
-export function Authorization(...roles: any[]) {
+export function Authorization(...roles: UserRole[]) {
 	if (roles.length > 0) {
 		return applyDecorators(
 			Roles(...roles),
