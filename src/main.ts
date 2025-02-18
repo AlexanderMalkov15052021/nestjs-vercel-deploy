@@ -70,11 +70,11 @@ async function bootstrap() {
 
   proxyApp.use(express.json());
 
-  proxyApp.post('/auth/login', async (req: any, res) => {
+  proxyApp.post('api/auth/login', async (req: any, res) => {
 
     const body = req.body;
 
-    const serverReq = await fetch(`${process.env.APPLICATION_URL}api/auth/login` as string, {
+    const serverReq = await fetch(`${process.env.APPLICATION_URL}/auth/login` as string, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json;charset=utf-8'
