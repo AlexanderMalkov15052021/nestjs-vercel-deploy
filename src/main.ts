@@ -4,7 +4,7 @@ import cookieParser from 'cookie-parser'
 import session from 'express-session'
 import pgConnect from 'connect-pg-simple';
 import * as dotenv from 'dotenv';
-import * as express from 'express';
+import express from 'express';
 import { ms, StringValue } from './libs/common/utils/ms.util';
 import { parseBoolean } from './libs/common/utils/parse-boolean.util';
 import { pool } from './db/pool.module';
