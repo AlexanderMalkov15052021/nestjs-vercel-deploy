@@ -74,7 +74,7 @@ async function bootstrap() {
 
     const body = req.body;
 
-    const serverReq = await fetch(`${process.env.APPLICATION_URL}/auth/login` as string, {
+    const serverReq = await fetch(`${process.env.APPLICATION_URL}api/auth/login` as string, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json;charset=utf-8'
