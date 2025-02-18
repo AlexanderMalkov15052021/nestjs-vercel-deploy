@@ -139,6 +139,19 @@ export class AuthService {
 		return this.saveSession(req, user)
 	}
 
+	public async getAllTokens() {
+
+		const userReq = await pool.query(`SELECT * FROM tokens`);
+
+		if (!userReq.rows.length) {
+			throw new NotFoundException(
+				'Токены не найдены. Таблица пуста.'
+			)
+		}
+
+		return userReq.rows;
+	}
+
 	/**
 	 * Извлекает профиль пользователя из кода авторизации провайдера.
 	 * @param req - Объект запроса Express.

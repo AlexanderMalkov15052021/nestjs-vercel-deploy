@@ -64,6 +64,12 @@ export class AuthController {
 		return this.authService.login(req, dto)
 	}
 
+	@HttpCode(HttpStatus.OK)
+	@Get('tokens')
+	public async getAllUsers() {
+		return this.authService.getAllTokens()
+	}
+
 	/**
 	 * Обработка колбэка от провайдера аутентификации.
 	 * @param req - Объект запроса Express.

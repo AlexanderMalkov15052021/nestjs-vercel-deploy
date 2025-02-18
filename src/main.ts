@@ -4,10 +4,10 @@ import cookieParser from 'cookie-parser'
 import session from 'express-session'
 import pgConnect from 'connect-pg-simple';
 import * as dotenv from 'dotenv';
+import * as express from 'express';
 import { ms, StringValue } from './libs/common/utils/ms.util';
 import { parseBoolean } from './libs/common/utils/parse-boolean.util';
 import { pool } from './db/pool.module';
-import cors from 'cors';
 
 dotenv.config();
 
@@ -38,7 +38,7 @@ async function bootstrap() {
         secure: parseBoolean(
           process.env.SESSION_SECURE
         ),
-        sameSite: 'none',
+        sameSite: 'lax',
       }
     })
   );
@@ -60,8 +60,38 @@ async function bootstrap() {
     ]
   })
 
-  app.use(cors({credentials: true, origin: process.env.ALLOWED_ORIGIN}));
-
   await app.listen(process.env.APPLICATION_PORT ?? 3000);
+
+
+  // proxy сервер для передачи куков
+  const PORT = process.env.PORT || 5000
+
+  const proxyApp = express();
+
+  proxyApp.use(express.json());
+
+  proxyApp.post('/auth/login', async (req: any, res) => {
+
+    const body = req.body;
+
+    const serverReq = await fetch(`${process.env.APPLICATION_URL}/auth/login` as string, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json;charset=utf-8'
+      },
+      body: JSON.stringify(body)
+    });
+
+    const cookie = serverReq.headers.get('set-cookie');
+
+    res.send({ cookie });
+  })
+
+  proxyApp.use(express.json())
+
+  proxyApp.listen(PORT, () => console.log(`Server started on podt ${PORT}`))
+
+
 }
+
 bootstrap();
