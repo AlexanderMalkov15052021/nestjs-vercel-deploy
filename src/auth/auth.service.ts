@@ -136,11 +136,9 @@ export class AuthService {
 			)
 		}
 
-		const res = this.saveSession(req, user)
+		console.log("req: ", req);
 
-		console.log("res: ", res);
-
-		return res;
+		return this.saveSession(req, user)
 	}
 
 	public async proxyLogin(req: Request, dto: LoginDto) {
