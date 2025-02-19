@@ -38,7 +38,7 @@ async function bootstrap() {
         secure: parseBoolean(
           process.env.SESSION_SECURE
         ),
-        sameSite: 'lax',
+        sameSite: 'None',
       }
     })
   );
