@@ -151,12 +151,12 @@ export class AuthService {
 			body: JSON.stringify(body)
 		});
 
-		// const bodyReq = await serverReq.json();
+		const bodyReq = await serverReq.json();
 
 		const cookie = serverReq.headers.get('set-cookie');
 
-		console.log("serverReq: ", serverReq);
-		console.log("headers: ", serverReq.headers);
+		console.log("bodyReq: ", bodyReq);
+		console.log("body: ", serverReq.body);
 
 		return { cookie }
 	}
