@@ -25,14 +25,16 @@ async function bootstrap() {
         tableName: 'user_sessions',
         createTableIfMissing: true
       }),
+      resave: true,
       secret: process.env.SESSION_SECRET,
       name: process.env.SESSION_NAME,
       saveUninitialized: true,
       cookie: {
-        maxAge: ms(process.env.SESSION_MAX_AGE as StringValue),
+        domain: process.env.SESSION_DOMAIN,
+        maxAge: 7200000,
         httpOnly: true,
-        secure: true,
-        sameSite: 'none',
+        secure: false,
+        sameSite: 'lax',
       }
     })
   );
@@ -55,36 +57,6 @@ async function bootstrap() {
   })
 
   await app.listen(process.env.APPLICATION_PORT ?? 3000);
-
-
-  // proxy сервер для передачи куков
-  const PORT = process.env.PORT || 5000
-
-  const proxyApp = express();
-
-  proxyApp.use(express.json());
-
-  proxyApp.post('api/auth/login', async (req: any, res) => {
-
-    const body = req.body;
-
-    const serverReq = await fetch(`${process.env.APPLICATION_URL}/auth/login` as string, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json;charset=utf-8'
-      },
-      body: JSON.stringify(body)
-    });
-
-    const cookie = serverReq.headers.get('set-cookie');
-
-    res.send({ cookie });
-  })
-
-  proxyApp.use(express.json())
-
-  proxyApp.listen(PORT, () => console.log(`Server started on podt ${PORT}`))
-
 
 }
 

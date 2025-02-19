@@ -67,8 +67,8 @@ export class AuthController {
 	@Recaptcha()
 	@Post('proxy/login')
 	@HttpCode(HttpStatus.OK)
-	public async proxyLogin(@Req() req: Request, @Body() dto: LoginDto) {
-		return this.authService.proxyLogin(req, dto)
+	public async proxyLogin(@Req() req: Request) {
+		return this.authService.proxyLogin(req)
 	}
 
 	@HttpCode(HttpStatus.OK)

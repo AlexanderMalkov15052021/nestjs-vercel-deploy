@@ -93,8 +93,7 @@ export class AuthService {
 	 * @throws UnauthorizedException - Если пароль неверный или email не подтвержден.
 	 */
 	public async login(req: Request, dto: LoginDto) {
-		console.log(dto);
-		console.log(dto.email);
+
 		const user = await this.userService.findByEmail(dto.email)
 
 		// passwd(123456) = "$argon2id$v=19$m=65536,t=3,p=4$JZQ85cVd7xTOefoYC7NF9A$fUoHl3vJrcRBE4wevWwg1XFCwVV5NuK6XCGK+yAyBlY"
@@ -141,23 +140,26 @@ export class AuthService {
 		return this.saveSession(req, user)
 	}
 
-	public async proxyLogin(req: Request, dto: LoginDto) {
+	public async proxyLogin(req: Request) {
 
-		const body = await req.body;
-
-		console.log("body: ", body);
+		const body = req.body;
 
 		const serverReq = await fetch(`${process.env.APPLICATION_URL}/auth/login` as string, {
 			method: 'POST',
-			body: JSON.parse(body)
+			headers: {
+				'Content-Type': 'application/json; charset=utf-8'
+			},
+			body: JSON.stringify(body)
 		});
 
 		// const bodyReq = await serverReq.json();
 
 		const cookie = serverReq.headers.get('set-cookie');
 
-		console.log("serverReq: ", serverReq);
 		console.log("cookie: ", cookie);
+
+		// console.log("serverReq: ", serverReq);
+		// const cookie = serverReq;
 
 		return { cookie }
 	}
