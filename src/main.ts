@@ -31,14 +31,9 @@ async function bootstrap() {
       saveUninitialized: false,
       cookie: {
         maxAge: ms(process.env.SESSION_MAX_AGE as StringValue),
-        domain: process.env.SESSION_DOMAIN,
-        httpOnly: parseBoolean(
-          process.env.SESSION_HTTP_ONLY
-        ),
-        secure: parseBoolean(
-          process.env.SESSION_SECURE
-        ),
-        sameSite: 'lax',
+        httpOnly: true,
+        secure: true,
+        sameSite: 'none',
       }
     })
   );
