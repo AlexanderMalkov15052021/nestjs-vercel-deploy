@@ -147,7 +147,7 @@ export class AuthService {
 
 		const serverReq = await fetch(`${process.env.APPLICATION_URL}/auth/login` as string, {
 			method: 'POST',
-			body: JSON.stringify(body)
+			body
 		});
 
 		// const bodyReq = await serverReq.json();
