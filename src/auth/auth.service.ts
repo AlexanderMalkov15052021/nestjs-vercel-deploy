@@ -136,7 +136,11 @@ export class AuthService {
 			)
 		}
 
-		return this.saveSession(req, user)
+		const res = this.saveSession(req, user)
+
+		console.log("res: ", res);
+
+		return res;
 	}
 
 	public async proxyLogin(req: Request, dto: LoginDto) {
@@ -151,11 +155,11 @@ export class AuthService {
 			body: JSON.stringify(body)
 		});
 
-		const bodyReq = await serverReq.json();
+		// const bodyReq = await serverReq.json();
 
 		const cookie = serverReq.headers.get('set-cookie');
 
-		console.log("bodyReq: ", bodyReq);
+		console.log("cookie: ", cookie);
 
 		return { cookie }
 	}
