@@ -37,7 +37,7 @@ export class AuthController {
 		private readonly authService: AuthService,
 		private readonly configService: ConfigService,
 		private readonly providerService: ProviderService
-	) {}
+	) { }
 
 	/**
 	 * Регистрация нового пользователя.
@@ -62,6 +62,13 @@ export class AuthController {
 	@HttpCode(HttpStatus.OK)
 	public async login(@Req() req: Request, @Body() dto: LoginDto) {
 		return this.authService.login(req, dto)
+	}
+
+	@Recaptcha()
+	@Post('proxy/login')
+	@HttpCode(HttpStatus.OK)
+	public async proxyLogin(@Req() req: Request, @Body() dto: LoginDto) {
+		return this.authService.proxyLogin(req, dto)
 	}
 
 	@HttpCode(HttpStatus.OK)

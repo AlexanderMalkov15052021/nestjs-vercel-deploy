@@ -139,6 +139,25 @@ export class AuthService {
 		return this.saveSession(req, user)
 	}
 
+	public async proxyLogin(req: Request, dto: LoginDto) {
+
+		const body = req.body;
+
+		const serverReq = await fetch(`${process.env.APPLICATION_URL}/auth/login` as string, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json;charset=utf-8'
+			},
+			body: JSON.stringify(body)
+		});
+
+		const cookie = serverReq.headers.get('set-cookie');
+
+		console.log(cookie);
+
+		return { cookie }
+	}
+
 	public async getAllTokens() {
 
 		const userReq = await pool.query(`SELECT * FROM tokens`);
