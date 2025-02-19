@@ -31,10 +31,11 @@ async function bootstrap() {
       saveUninitialized: true,
       cookie: {
         domain: process.env.SESSION_DOMAIN,
-        maxAge: 7200000,
+        maxAge: 7200000000,
         httpOnly: true,
         secure: false,
         sameSite: 'lax',
+        express: 7200000000
       }
     })
   );
