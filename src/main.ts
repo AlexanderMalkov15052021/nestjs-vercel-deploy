@@ -25,14 +25,9 @@ async function bootstrap() {
         tableName: 'user_sessions',
         createTableIfMissing: true
       }),
-      proxy: true,
       secret: process.env.SESSION_SECRET,
       name: process.env.SESSION_NAME,
-      resave: false,
-      saveUninitialized: false,
       cookie: {
-        maxAge: ms(process.env.SESSION_MAX_AGE as StringValue),
-        httpOnly: true,
         secure: true,
         sameSite: 'none',
       }
