@@ -143,11 +143,13 @@ export class AuthService {
 
 	public async proxyLogin(req: Request, dto: LoginDto) {
 
-		const body = req.body;
+		const body = await req.body;
+
+		console.log("body: ", body);
 
 		const serverReq = await fetch(`${process.env.APPLICATION_URL}/auth/login` as string, {
 			method: 'POST',
-			body
+			body: JSON.stringify(body)
 		});
 
 		// const bodyReq = await serverReq.json();
@@ -156,7 +158,6 @@ export class AuthService {
 
 		console.log("serverReq: ", serverReq);
 		console.log("cookie: ", cookie);
-		console.log("body: ", body);
 
 		return { cookie }
 	}
