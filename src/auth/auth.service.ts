@@ -136,8 +136,6 @@ export class AuthService {
 			)
 		}
 
-		console.log("req: ", req);
-
 		return this.saveSession(req, user)
 	}
 
@@ -157,7 +155,8 @@ export class AuthService {
 
 		const cookie = serverReq.headers.get('set-cookie');
 
-		console.log("cookie: ", cookie);
+		console.log("serverReq: ", serverReq);
+		console.log("headers: ", serverReq.headers);
 
 		return { cookie }
 	}
