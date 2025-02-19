@@ -93,6 +93,8 @@ export class AuthService {
 	 * @throws UnauthorizedException - Если пароль неверный или email не подтвержден.
 	 */
 	public async login(req: Request, dto: LoginDto) {
+		console.log(dto);
+		console.log(dto.email);
 		const user = await this.userService.findByEmail(dto.email)
 
 		// passwd(123456) = "$argon2id$v=19$m=65536,t=3,p=4$JZQ85cVd7xTOefoYC7NF9A$fUoHl3vJrcRBE4wevWwg1XFCwVV5NuK6XCGK+yAyBlY"
