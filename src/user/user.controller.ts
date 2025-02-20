@@ -5,7 +5,9 @@ import {
 	HttpCode,
 	HttpStatus,
 	Param,
-	Patch
+	Patch,
+	Post,
+	Req
 } from '@nestjs/common'
 
 import { Authorization } from '../auth/decorators/auth.decorator'
@@ -35,6 +37,12 @@ export class UserController {
 	@Get('profile')
 	public async findProfile(@Authorized('id') userId: string) {
 		return this.userService.findById(userId)
+	}
+
+	@HttpCode(HttpStatus.OK)
+	@Post('proxy/profile')
+	public async findProxyProfile(@Req() req: Request) {
+		return this.userService.findProxyProfile(req)
 	}
 
 	/**

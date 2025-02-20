@@ -33,6 +33,21 @@ export class UserService {
 		return userReq.rows[0];
 	}
 
+	public async findProxyProfile(req: Request) {
+
+		const cookie = req.body["cookie"];
+
+		const serverReq = await fetch(`${process.env.APPLICATION_URL}/users/profile` as string, {
+			headers: {
+				'Cookie': cookie
+			},
+		});
+
+		const res = await serverReq.json();
+
+		return res;
+	}
+
 	// установить ограничение, удаляет только администратор
 
 	public async getAllUsers() {
