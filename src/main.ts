@@ -5,6 +5,8 @@ import session from 'express-session'
 import pgConnect from 'connect-pg-simple';
 import * as dotenv from 'dotenv';
 import { pool } from './db/pool.module';
+import { ms, StringValue } from './libs/common/utils/ms.util';
+import { ConfigService } from '@nestjs/config';
 
 dotenv.config();
 
@@ -13,6 +15,7 @@ const pgSession = (pgConnect as any)(session);
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  const config = app.get(ConfigService)
   app.use((cookieParser as any)(process.env.COOKIES_SECRET));
 
   app.use(
@@ -28,7 +31,7 @@ async function bootstrap() {
       saveUninitialized: true,
       cookie: {
         domain: process.env.SESSION_DOMAIN,
-        maxAge: 720000000000,
+        maxAge: ms(config.getOrThrow<StringValue>('SESSION_MAX_AGE')),
         httpOnly: true,
         secure: false,
         sameSite: 'lax'

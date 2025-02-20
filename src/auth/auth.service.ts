@@ -285,6 +285,8 @@ export class AuthService {
 
 		const cookie = serverReq.headers.get('set-cookie');
 
+		console.log(cookie);
+
 		return { cookie }
 	}
 
