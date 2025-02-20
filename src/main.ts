@@ -33,7 +33,7 @@ async function bootstrap() {
         domain: process.env.SESSION_DOMAIN,
         maxAge: ms(config.getOrThrow<StringValue>('SESSION_MAX_AGE')),
         httpOnly: true,
-        secure: false,
+        secure: process.env.SESSION_SECURE,
         sameSite: 'lax'
       }
     })
