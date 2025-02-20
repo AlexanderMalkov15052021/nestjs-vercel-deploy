@@ -137,7 +137,7 @@ export class AuthController {
 		return this.authService.logout(req, res)
 	}
 
-	@Get('proxy/logout')
+	@Post('proxy/logout')
 	@HttpCode(HttpStatus.OK)
 	public async proxyLogout() {
 		return this.authService.proxyLogout()
