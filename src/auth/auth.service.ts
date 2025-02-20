@@ -152,14 +152,7 @@ export class AuthService {
 			body: JSON.stringify(body)
 		});
 
-		// const bodyReq = await serverReq.json();
-
 		const cookie = serverReq.headers.get('set-cookie');
-
-		console.log("cookie: ", cookie);
-
-		// console.log("serverReq: ", serverReq);
-		// const cookie = serverReq;
 
 		return { cookie }
 	}
@@ -281,6 +274,18 @@ export class AuthService {
 				resolve()
 			})
 		})
+	}
+
+	public async proxyLogout() {
+		const serverReq = await fetch(`${process.env.APPLICATION_URL}/auth/logout` as string, {
+			headers: {
+				'Content-Type': 'application/json; charset=utf-8'
+			},
+		});
+
+		const cookie = serverReq.headers.get('set-cookie');
+
+		return { cookie }
 	}
 
 	/**

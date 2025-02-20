@@ -4,9 +4,6 @@ import cookieParser from 'cookie-parser'
 import session from 'express-session'
 import pgConnect from 'connect-pg-simple';
 import * as dotenv from 'dotenv';
-import express from 'express';
-import { ms, StringValue } from './libs/common/utils/ms.util';
-import { parseBoolean } from './libs/common/utils/parse-boolean.util';
 import { pool } from './db/pool.module';
 
 dotenv.config();
@@ -31,7 +28,7 @@ async function bootstrap() {
       saveUninitialized: true,
       cookie: {
         domain: process.env.SESSION_DOMAIN,
-        maxAge: 720000000000,
+        maxAge: process.env.SESSION_MAX_AGE,
         httpOnly: true,
         secure: false,
         sameSite: 'lax'
