@@ -33,7 +33,9 @@ async function bootstrap() {
       cookie: {
         domain: process.env.SESSION_DOMAIN,
         maxAge: ms(config.getOrThrow<StringValue>('SESSION_MAX_AGE')),
-        httpOnly: true,
+        httpOnly: parseBoolean(
+          config.getOrThrow<string>('SESSION_HTTP_ONLY')
+        ),
         secure: parseBoolean(
           config.getOrThrow<string>('SESSION_SECURE')
         ),
