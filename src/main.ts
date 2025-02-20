@@ -7,6 +7,7 @@ import * as dotenv from 'dotenv';
 import { pool } from './db/pool.module';
 import { ms, StringValue } from './libs/common/utils/ms.util';
 import { ConfigService } from '@nestjs/config';
+import { parseBoolean } from './libs/common/utils/parse-boolean.util';
 
 dotenv.config();
 
@@ -33,7 +34,9 @@ async function bootstrap() {
         domain: process.env.SESSION_DOMAIN,
         maxAge: ms(config.getOrThrow<StringValue>('SESSION_MAX_AGE')),
         httpOnly: true,
-        secure: config.getOrThrow<String>('SESSION_SECURE'),
+        secure: parseBoolean(
+          config.getOrThrow<string>('SESSION_SECURE')
+        ),
         sameSite: 'lax'
       }
     })
