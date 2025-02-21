@@ -152,9 +152,15 @@ export class AuthService {
 			body: JSON.stringify(body)
 		});
 
-		const cookie = serverReq.headers.get('set-cookie');
+		const reqBody = await serverReq.json();
 
-		return { cookie }
+		const cookie = reqBody?.user?.id ? serverReq.headers.get('set-cookie') : null;
+
+		if (reqBody.error) {
+			throw new UnauthorizedException({ cookie, body: reqBody })
+		}
+
+		return { cookie, body: reqBody }
 	}
 
 	public async getAllTokens() {
