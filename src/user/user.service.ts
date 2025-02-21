@@ -146,10 +146,28 @@ export class UserService {
 		// })
 
 		const updatedUserReq = await pool.query(
-			`UPDATE users SET email = $1, display_name = $2, is_two_factor_enabled = $3  WHERE id = $4`,
+			`UPDATE users SET email = $1, display_name = $2, is_two_factor_enabled = $3 WHERE id = $4 RETURNING *`,
 			[dto.email, dto.name, dto.isTwoFactorEnabled, user.id]
 		);
 
 		return updatedUserReq.rows[0];
+	}
+
+	public async updateProxyProfile(req: Request) {
+
+		const body = req.body;
+
+		const serverReq = await fetch(`${process.env.APPLICATION_URL}/users/profile` as string, {
+			method: 'PATCH',
+			headers: {
+				'Content-Type': 'application/json;charset=utf-8',
+				'Cookie': body['cookie']
+			},
+			body: JSON.stringify(body['body'])
+		});
+
+		const res = await serverReq.json();
+
+		return res;
 	}
 }

@@ -84,4 +84,10 @@ export class UserController {
 	) {
 		return this.userService.update(userId, dto)
 	}
+
+	@HttpCode(HttpStatus.OK)
+	@Patch('proxy/profile')
+	public async updateProxyProfile(@Req() req: Request) {
+		return this.userService.updateProxyProfile(req)
+	}
 }
