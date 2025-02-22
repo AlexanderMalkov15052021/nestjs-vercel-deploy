@@ -298,7 +298,7 @@ export class AuthService {
 
 		console.log(1);
 
-		const body = await req.body;
+		const body = req.body;
 
 		const serverReq = await fetch(`${process.env.APPLICATION_URL}/auth/oauth/connect/${body["slug"]}` as string, {
 			headers: {
