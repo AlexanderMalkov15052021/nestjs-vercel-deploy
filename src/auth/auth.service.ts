@@ -308,6 +308,8 @@ export class AuthService {
 
 		const reqBody = await serverReq.json();
 
+		console.log({ cookie, body: reqBody });
+
 		return { cookie, body: reqBody }
 	}
 
