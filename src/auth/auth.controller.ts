@@ -127,6 +127,7 @@ export class AuthController {
 	@Post('/oauth/proxy/connect/:provider')
 	@HttpCode(HttpStatus.OK)
 	public async proxyConnect(@Req() req: Request) {
+		console.log(0);
 		return this.authService.proxyConnect(req)
 	}
 
