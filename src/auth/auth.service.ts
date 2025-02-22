@@ -294,6 +294,21 @@ export class AuthService {
 		return { cookie }
 	}
 
+	public async proxyConnect(req: Request) {
+
+		const body = req.body;
+
+		const serverReq = await fetch(`${process.env.APPLICATION_URL}/auth/oauth/connect/${body["slug"]}` as string, {
+			headers: {
+				'Content-Type': 'application/json; charset=utf-8'
+			}
+		});
+
+		const reqBody = await serverReq.json();
+
+		return reqBody
+	}
+
 	/**
 	 * Сохраняет сессию пользователя.
 	 * @param req - Объект запроса Express.

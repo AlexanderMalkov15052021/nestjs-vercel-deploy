@@ -100,11 +100,7 @@ export class AuthController {
 			)
 		}
 
-		console.log(1, req);
-
 		await this.authService.extractProfileFromCode(req, provider, code)
-
-		console.log(2, req);
 
 		return res.redirect(
 			`${this.configService.getOrThrow<string>('ALLOWED_ORIGIN')}/dashboard/settings`
@@ -124,6 +120,12 @@ export class AuthController {
 		return {
 			url: providerInstance.getAuthUrl()
 		}
+	}
+
+	@Post('/oauth/proxy/connect/:provider')
+	@HttpCode(HttpStatus.OK)
+	public async proxyConnect(@Req() req: Request) {
+		return this.authService.proxyConnect(req)
 	}
 
 	/**
