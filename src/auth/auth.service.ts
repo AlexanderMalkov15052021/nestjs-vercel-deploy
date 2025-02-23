@@ -313,24 +313,24 @@ export class AuthService {
 		return { cookie, body: reqBody }
 	}
 
-	// public async proxyCallback(req: Request) {
+	public async proxyCallback(req: Request, res: Response) {
 
-	// 	const body = req.body;
+		const cookie = req.headers.cookie;
 
-	// 	const serverReq = await fetch(`${process.env.APPLICATION_URL}/auth/oauth/callback/${body["slug"]}` as string, {
-	// 		headers: {
-	// 			'Content-Type': 'application/json; charset=utf-8'
-	// 		}
-	// 	});
+		console.log("cookie: ", cookie);
 
-	// 	const cookie = serverReq.headers.get('set-cookie');
+		await fetch(`${process.env.ALLOWED_ORIGIN}/api/auth/oauth/apply` as string, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json; charset=utf-8'
+			},
+			body: JSON.stringify({ cookie })
+		});
 
-	// 	const reqBody = await serverReq.json();
-
-	// 	console.log({ cookie, body: reqBody });
-
-	// 	return { cookie, body: reqBody }
-	// }
+		return res.redirect(
+			`${this.configService.getOrThrow<string>('ALLOWED_ORIGIN')}/dashboard/settings`
+		);
+	}
 
 	/**
 	 * Сохраняет сессию пользователя.
