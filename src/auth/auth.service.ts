@@ -296,8 +296,6 @@ export class AuthService {
 
 	public async proxyConnect(req: Request) {
 
-		console.log(1);
-
 		const body = req.body;
 
 		const serverReq = await fetch(`${process.env.APPLICATION_URL}/auth/oauth/connect/${body["slug"]}` as string, {
@@ -305,7 +303,6 @@ export class AuthService {
 				'Content-Type': 'application/json; charset=utf-8'
 			}
 		});
-		console.log(2);
 
 		const cookie = serverReq.headers.get('set-cookie');
 

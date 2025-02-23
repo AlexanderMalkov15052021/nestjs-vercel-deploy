@@ -102,6 +102,8 @@ export class AuthController {
 
 		await this.authService.extractProfileFromCode(req, provider, code)
 
+		console.log(res);
+
 		return res.redirect(
 			`${this.configService.getOrThrow<string>('ALLOWED_ORIGIN')}/dashboard/settings`
 		)
@@ -115,8 +117,6 @@ export class AuthController {
 	@UseGuards(AuthProviderGuard)
 	@Get('/oauth/connect/:provider')
 	public async connect(@Param('provider') provider: string) {
-		console.log(3);
-
 		const providerInstance = this.providerService.findByService(provider)
 
 		return {
@@ -125,8 +125,8 @@ export class AuthController {
 	}
 
 	@Post('/oauth/proxy/connect/:provider')
+	@HttpCode(HttpStatus.OK)
 	public async proxyConnect(@Req() req: Request) {
-		console.log(0);
 		return this.authService.proxyConnect(req)
 	}
 
