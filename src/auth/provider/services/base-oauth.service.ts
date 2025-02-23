@@ -84,10 +84,7 @@ export class BaseOAuthService {
 			}
 		})
 
-		console.log("tokensRequest: ", tokensRequest);
-
 		if (!tokensRequest.ok) {
-			console.log(111);
 			throw new BadRequestException(
 				`Не удалось получить пользователя с ${this.options.profile_url}. Проверьте правильность токена доступа.`
 			)
@@ -107,7 +104,11 @@ export class BaseOAuthService {
 			}
 		})
 
+		console.log("userRequest: ", userRequest);
+
 		if (!userRequest.ok) {
+			console.log(123123);
+
 			throw new UnauthorizedException(
 				`Не удалось получить пользователя с ${this.options.profile_url}. Проверьте правильность токена доступа.`
 			)
