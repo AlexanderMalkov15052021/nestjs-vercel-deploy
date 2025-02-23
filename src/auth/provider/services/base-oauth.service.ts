@@ -75,8 +75,6 @@ export class BaseOAuthService {
 			grant_type: 'authorization_code'
 		})
 
-		console.log("tokenQuery: ", tokenQuery);
-
 		const tokensRequest = await fetch(this.options.access_url, {
 			method: 'POST',
 			body: tokenQuery,
