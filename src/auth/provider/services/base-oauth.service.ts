@@ -22,7 +22,7 @@ export class BaseOAuthService {
 	 *
 	 * @param options - Опции провайдера, содержащие необходимые параметры для аутентификации.
 	 */
-	public constructor(private readonly options: TypeBaseProviderOptions) {}
+	public constructor(private readonly options: TypeBaseProviderOptions) { }
 
 	/**
 	 * Извлекает информацию о пользователе из данных, полученных от провайдера.
@@ -84,7 +84,10 @@ export class BaseOAuthService {
 			}
 		})
 
+		console.log("tokensRequest: ", tokensRequest);
+
 		if (!tokensRequest.ok) {
+			console.log(111);
 			throw new BadRequestException(
 				`Не удалось получить пользователя с ${this.options.profile_url}. Проверьте правильность токена доступа.`
 			)

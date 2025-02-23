@@ -102,12 +102,16 @@ export class AuthController {
 
 		await this.authService.extractProfileFromCode(req, provider, code)
 
-		console.log(res["session"]);
-
 		return res.redirect(
 			`${this.configService.getOrThrow<string>('ALLOWED_ORIGIN')}/dashboard/settings`
 		)
 	}
+
+	// @Post('/oauth/proxy/callback/:provider')
+	// @HttpCode(HttpStatus.OK)
+	// public async proxyCallback(@Req() req: Request) {
+	// 	return this.authService.proxyCallback(req)
+	// }
 
 	/**
 	 * Подключение пользователя к провайдеру аутентификации.

@@ -313,6 +313,25 @@ export class AuthService {
 		return { cookie, body: reqBody }
 	}
 
+	// public async proxyCallback(req: Request) {
+
+	// 	const body = req.body;
+
+	// 	const serverReq = await fetch(`${process.env.APPLICATION_URL}/auth/oauth/callback/${body["slug"]}` as string, {
+	// 		headers: {
+	// 			'Content-Type': 'application/json; charset=utf-8'
+	// 		}
+	// 	});
+
+	// 	const cookie = serverReq.headers.get('set-cookie');
+
+	// 	const reqBody = await serverReq.json();
+
+	// 	console.log({ cookie, body: reqBody });
+
+	// 	return { cookie, body: reqBody }
+	// }
+
 	/**
 	 * Сохраняет сессию пользователя.
 	 * @param req - Объект запроса Express.
