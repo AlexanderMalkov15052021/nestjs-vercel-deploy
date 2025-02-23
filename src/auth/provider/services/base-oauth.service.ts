@@ -22,7 +22,7 @@ export class BaseOAuthService {
 	 *
 	 * @param options - Опции провайдера, содержащие необходимые параметры для аутентификации.
 	 */
-	public constructor(private readonly options: TypeBaseProviderOptions) { }
+	public constructor(private readonly options: TypeBaseProviderOptions) {}
 
 	/**
 	 * Извлекает информацию о пользователе из данных, полученных от провайдера.
@@ -75,6 +75,8 @@ export class BaseOAuthService {
 			grant_type: 'authorization_code'
 		})
 
+		console.log("tokenQuery: ", tokenQuery);
+
 		const tokensRequest = await fetch(this.options.access_url, {
 			method: 'POST',
 			body: tokenQuery,
@@ -83,8 +85,6 @@ export class BaseOAuthService {
 				Accept: 'application/json'
 			}
 		})
-
-		console.log("tokensRequest: ", tokensRequest);
 
 		if (!tokensRequest.ok) {
 			throw new BadRequestException(
