@@ -86,6 +86,25 @@ export class AuthService {
 		}
 	}
 
+	public async proxyRegister(req: Request) {
+
+		const body = req.body;
+
+		const serverReq = await fetch(`${process.env.APPLICATION_URL}/auth/register` as string, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json; charset=utf-8'
+			},
+			body: JSON.stringify(body)
+		});
+
+		const reqBody = await serverReq.json();
+
+		const cookie = serverReq.headers.get('set-cookie');
+
+		return { cookie, body: reqBody }
+	}
+
 	/**
 	 * Выполняет вход пользователя в систему.
 	 * @param req - Объект запроса Express.
@@ -308,19 +327,7 @@ export class AuthService {
 			}
 		});
 
-
 		const reqBody = await serverReq.json();
-
-		// const token = uuidv4();
-
-		// const cookieName = "cookie_token";
-
-		// const day = 60 * 60 * 24 * 1000;
-		// const maxAge = new Date(new Date().getTime() + day).toUTCString();
-
-		// const cookie = `${cookieName}=${token}; Domain=${process.env.COOKIES_DOMAIN}; Path=/; Expires=${maxAge}; HttpOnly; SameSite=Lax`;
-
-		// console.log("cookie: ", cookie);
 
 		return { body: reqBody };
 	}
@@ -338,30 +345,10 @@ export class AuthService {
 			}
 		);
 
-		// await this.extractProfileFromCode(req, slug, code);
-
-		// const reqBody = await serverReq.json();
-
 		const cookie = serverReq.headers.get('set-cookie');
 
-		// const cookie = serverReq.headers.cookie;
-
-		console.log(1, "cookie: ", cookie);
-
 		return { cookie };
-		// const cookie = req.headers.cookie;
 
-		// console.log("cookie: ", cookie);
-
-		// await fetch(`${process.env.ALLOWED_ORIGIN}/api/auth/oauth/apply` as string, {
-		// 	method: 'POST',
-		// 	headers: {
-		// 		'Content-Type': 'application/json; charset=utf-8'
-		// 	},
-		// 	body: JSON.stringify({ cookie })
-		// });
-
-		// return true;
 	}
 
 	/**

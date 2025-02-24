@@ -51,6 +51,12 @@ export class AuthController {
 		return this.authService.register(dto)
 	}
 
+	@Post('proxy/register')
+	@HttpCode(HttpStatus.OK)
+	public async proxyRegister(@Req() req: Request) {
+		return this.authService.proxyRegister(req)
+	}
+
 	/**
 	 * Вход пользователя в систему.
 	 * @param req - Объект запроса Express.
@@ -101,19 +107,10 @@ export class AuthController {
 			)
 		}
 
-		// console.log(1, "code:", code);  // 63775wyay5x2v32s
-
 		await this.authService.extractProfileFromCode(req, provider, code)
 
-		// `${this.configService.getOrThrow<string>('ALLOWED_ORIGIN')}/dashboard/settings`
-
 		return true;
-		// return res.redirect(
-		// 	`${this.configService.getOrThrow<string>('APPLICATION_URL')}/auth/oauth/proxy/callback/${provider}`
-		// )
-		// return res.redirect(
-		// 	`${this.configService.getOrThrow<string>('ALLOWED_ORIGIN')}/dashboard/settings`
-		// )
+		
 	}
 
 	@Post('/oauth/proxy/callback/:provider')
