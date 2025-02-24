@@ -94,21 +94,29 @@ export class AuthController {
 		@Query('code') code: string,
 		@Param('provider') provider: string
 	) {
+
 		if (!code) {
 			throw new BadRequestException(
 				'Не был предоставлен код авторизации.'
 			)
 		}
 
+		// console.log(1, "code:", code);  // 63775wyay5x2v32s
+
 		await this.authService.extractProfileFromCode(req, provider, code)
 
-		return res.redirect(
-			// `${this.configService.getOrThrow<string>('ALLOWED_ORIGIN')}/dashboard/settings`
-			`${this.configService.getOrThrow<string>('APPLICATION_URL')}/auth/oauth/proxy/callback/${provider}`
-		)
+		// `${this.configService.getOrThrow<string>('ALLOWED_ORIGIN')}/dashboard/settings`
+
+		return true;
+		// return res.redirect(
+		// 	`${this.configService.getOrThrow<string>('APPLICATION_URL')}/auth/oauth/proxy/callback/${provider}`
+		// )
+		// return res.redirect(
+		// 	`${this.configService.getOrThrow<string>('ALLOWED_ORIGIN')}/dashboard/settings`
+		// )
 	}
 
-	@Get('/oauth/proxy/callback/:provider')
+	@Post('/oauth/proxy/callback/:provider')
 	@HttpCode(HttpStatus.OK)
 	public async proxyCallback(
 		@Req() req: Request,

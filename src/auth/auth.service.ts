@@ -19,6 +19,8 @@ import { TwoFactorAuthService } from './two-factor-auth/two-factor-auth.service'
 import { pool } from '../db/pool.module'
 import { AuthMethod, User } from '../libs/common/types'
 
+import { v4 as uuidv4 } from 'uuid';
+
 /**
  * Сервис для аутентификации и управления сессиями пользователей.
  */
@@ -254,6 +256,8 @@ export class AuthService {
 
 		}
 
+		console.log(user);
+
 		return this.saveSession(req, user)
 	}
 
@@ -304,32 +308,60 @@ export class AuthService {
 			}
 		});
 
-		const cookie = serverReq.headers.get('set-cookie');
 
 		const reqBody = await serverReq.json();
 
-		console.log({ cookie, body: reqBody });
+		// const token = uuidv4();
 
-		return { cookie, body: reqBody }
+		// const cookieName = "cookie_token";
+
+		// const day = 60 * 60 * 24 * 1000;
+		// const maxAge = new Date(new Date().getTime() + day).toUTCString();
+
+		// const cookie = `${cookieName}=${token}; Domain=${process.env.COOKIES_DOMAIN}; Path=/; Expires=${maxAge}; HttpOnly; SameSite=Lax`;
+
+		// console.log("cookie: ", cookie);
+
+		return { body: reqBody };
 	}
 
 	public async proxyCallback(req: Request, res: Response) {
 
-		const cookie = req.headers.cookie;
+		const { slug, code } = req.body;
 
-		console.log("cookie: ", cookie);
-
-		await fetch(`${process.env.ALLOWED_ORIGIN}/api/auth/oauth/apply` as string, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json; charset=utf-8'
-			},
-			body: JSON.stringify({ cookie })
-		});
-
-		return res.redirect(
-			`${this.configService.getOrThrow<string>('ALLOWED_ORIGIN')}/dashboard/settings`
+		const serverReq = await fetch(
+			`${process.env.APPLICATION_URL}/auth/oauth/callback/${slug}?code=${code}` as string,
+			{
+				headers: {
+					'Content-Type': 'application/json; charset=utf-8'
+				},
+			}
 		);
+
+		// await this.extractProfileFromCode(req, slug, code);
+
+		// const reqBody = await serverReq.json();
+
+		const cookie = serverReq.headers.get('set-cookie');
+
+		// const cookie = serverReq.headers.cookie;
+
+		console.log(1, "cookie: ", cookie);
+
+		return { cookie };
+		// const cookie = req.headers.cookie;
+
+		// console.log("cookie: ", cookie);
+
+		// await fetch(`${process.env.ALLOWED_ORIGIN}/api/auth/oauth/apply` as string, {
+		// 	method: 'POST',
+		// 	headers: {
+		// 		'Content-Type': 'application/json; charset=utf-8'
+		// 	},
+		// 	body: JSON.stringify({ cookie })
+		// });
+
+		// return true;
 	}
 
 	/**

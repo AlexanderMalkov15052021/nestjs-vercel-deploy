@@ -22,7 +22,7 @@ export class BaseOAuthService {
 	 *
 	 * @param options - Опции провайдера, содержащие необходимые параметры для аутентификации.
 	 */
-	public constructor(private readonly options: TypeBaseProviderOptions) {}
+	public constructor(private readonly options: TypeBaseProviderOptions) { }
 
 	/**
 	 * Извлекает информацию о пользователе из данных, полученных от провайдера.
@@ -128,7 +128,8 @@ export class BaseOAuthService {
 	 * @returns URL для перенаправления.
 	 */
 	private getRedirectUrl() {
-		return `${this.BASE_URL}/auth/oauth/callback/${this.options.name}`
+		// return `${this.BASE_URL}/auth/oauth/callback/${this.options.name}`
+		return `${process.env.ALLOWED_ORIGIN}/api/auth/oauth/callback/${this.options.name}`
 	}
 
 	/**
